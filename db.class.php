@@ -283,17 +283,17 @@ class Db
         $i_num = 0;
 
         $st_result = Array('result' => Array(   'status'                    => self::QUERY_RESULT_STATUS_NOT_EXECUTED,
-                                                'error'                     => 0,
-                                                'error_description'         => 'Not executed yet',
-                                                'numrows'                   => 0,
-                                                'insert_id'                 => null,
-                                                'query'                     => $s_sql,
-                                                'query_type'                => $s_query_type,
-                                                'query_for_driver'          => $s_type_connection,
-                                                'profiler_request_start'    => Datetime::getDateTime(Datetime::FORMAT_MICROTIME),
-                                                'profiler_request_end'      => 0),
-                            'data'  => Array()
-                           );
+            'error'                     => 0,
+            'error_description'         => 'Not executed yet',
+            'numrows'                   => 0,
+            'insert_id'                 => null,
+            'query'                     => $s_sql,
+            'query_type'                => $s_query_type,
+            'query_for_driver'          => $s_type_connection,
+            'profiler_request_start'    => Datetime::getDateTime(Datetime::FORMAT_MICROTIME),
+            'profiler_request_end'      => 0),
+            'data'  => Array()
+        );
 
         $i_result_numrows = 0;
         $i_result_status  = self::QUERY_RESULT_STATUS_NOT_EXECUTED;
@@ -394,11 +394,11 @@ class Db
                         $s_bash_file_contents .= "export HISTFILESIZE=0\nexport HISTSIZE=0\nHISTSIZE=0\nunset HISTFILE\nset +o history\n";
                         // This is necessary for supporting accents and UTF-8 in redirectiong
                         $s_bash_file_contents .= "LANG=ca_ES.UTF-8\n";
-                        $s_bash_file_contents .= $this->$s_path_to_cqlsh." --file=$s_file_name_cqlsi > $s_file_name_cqlsi_output";
+                        $s_bash_file_contents .= $this->s_path_to_cqlsh." --file=$s_file_name_cqlsi > $s_file_name_cqlsi_output";
                     } else {
                         // Write. Redirect stderr
                         $s_bash_file_contents  = "#/bin/bash\n";
-                        $s_bash_file_contents .= $this->$s_path_to_cqlsh." --file=$s_file_name_cqlsi 2> $s_file_name_cqlsi_output";
+                        $s_bash_file_contents .= $this->s_path_to_cqlsh." --file=$s_file_name_cqlsi 2> $s_file_name_cqlsi_output";
                     }
 
                     $b_success  = File::writeToFile($s_cql, $s_file_name_cqlsi, File::LOG_FILE_MODE_WRITE);
@@ -585,6 +585,11 @@ class Db
         return $st_result;
     }
 
+    public function setCqlshPath($s_path) {
+        // Provide it with an ending /
+        $this->s_path_to_cqlsh = $s_path;
+    }
+
     /*
      * Creator:      M.
      * Date Created: 2013-12-18 21:52
@@ -633,4 +638,5 @@ class Db
 
         return $s_prepared_data;
     }
+
 }

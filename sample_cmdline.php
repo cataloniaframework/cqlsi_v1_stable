@@ -2,11 +2,11 @@
 
  /**
  * Creator:      Carles Mateo
- * Date Created: 2014-01-26 14:04
+ * Date Created: 2014-01-27 11:26
  * Last Updater: 
  * Last Updated: 
- * Filename:     sample_web.php
- * Description:
+ * Filename:     sample_cmdline.php
+ * Description:  Sample to invoke with php -f sample_cmdline.php
  */
 
 require_once 'datetime.class.php';
