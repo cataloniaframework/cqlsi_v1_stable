@@ -527,7 +527,6 @@ class Db
                 }
 
                 $i_pointer=0;
-
                 if ($i_num>0) {
                     while ($i_pointer<$i_num && $s_type_connection != self::TYPE_CONNECTION_CASSANDRA_CQLSI)
                     {

@@ -3,8 +3,8 @@
  /**
  * Creator:      Carles Mateo
  * Date Created: 2014-01-27 11:26
- * Last Updater: 
- * Last Updated: 
+ * Last Updater: Carles Mateo
+ * Last Updated: 2014-01-27 14:10
  * Filename:     sample_cmdline.php
  * Description:  Sample to invoke with php -f sample_cmdline.php
  */
@@ -30,7 +30,7 @@ $st_db_config = Array(	'read'  => Array(   'servers'   => Array(0 => Array('conn
                                                                             )
                                                                 )
                                         ),
-                        'write' => Array(   'servers'   => Array(0 => Array('connection_type'   => Db::TYPE_CONNECTION_MYSQLI,
+                        'write' => Array(   'servers'   => Array(0 => Array('connection_type'   => Db::TYPE_CONNECTION_CASSANDRA_CQLSI,
                                                                             'connection_method' => Db::CONNECTION_METHOD_TCPIP,
                                                                             'server_hostname'   => '127.0.0.1',
                                                                             'server_port'		=> Db::PORT_DEFAULT_CASSANDRA,
@@ -59,6 +59,8 @@ $s_cql = 'select * from system.schema_keyspaces;';
 
 $st_results = $o_db->queryRead($s_cql);
 
+$b_catalonia_keyspace_found = false;
+
 if ($st_results['result']['error'] > 0) {
     // There was error, for example
     // Connection error: Could not connect to localhost:9160
@@ -67,5 +69,26 @@ if ($st_results['result']['error'] > 0) {
 } else {
     echo 'The query: '.$st_results['result']['query'].' returned data: '."\n";
     print_r($st_results['data']);
-}
 
+    foreach($st_results['data'] as $i_key=>$st_values) {
+        if ($st_values['keyspace_name'] == 'cataloniasample') {
+            $b_catalonia_keyspace_found = true;
+            break;
+        }
+    }
+
+    if ($b_catalonia_keyspace_found == false) {
+        echo "Catalonia-Sample keyspace not found, creating it...\n";
+
+        $s_cql = "CREATE KEYSPACE cataloniasample
+                  WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};";
+
+        $st_results = $o_db->queryWrite($s_cql);
+
+        if ($st_results['result']['error'] > 0) {
+            echo 'The query: '.$st_results['result']['query'].' returned error: '.$st_results['result']['error_description']."\n";
+        } else {
+            echo 'Keyspace cataloniasample created successfully!'."\n";
+        }
+    }
+}

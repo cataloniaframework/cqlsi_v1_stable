@@ -31,7 +31,7 @@ $st_db_config = Array(	'read'  => Array(   'servers'   => Array(0 => Array('conn
                                                                 )
                                         ),
                         'write' => Array(   'servers'   => Array(0 => Array('connection_type'   => Db::TYPE_CONNECTION_MYSQLI,
-                                                                            'connection_method' => Db::CONNECTION_METHOD_TCPIP,
+                                                                            'connection_method' => Db::PORT_DEFAULT_CASSANDRA,
                                                                             'server_hostname'   => '127.0.0.1',
                                                                             'server_port'		=> Db::PORT_DEFAULT_CASSANDRA,
                                                                             'username'			=> 'www_cassandra',
