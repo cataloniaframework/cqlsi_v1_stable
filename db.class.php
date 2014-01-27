@@ -480,10 +480,10 @@ class Db
 
                                         $i_data_counter = 0;
                                         for ($i_loop = 3; $i_loop < (3 + $i_output_num_results); $i_loop++) {
-                                            $i_data_counter++;
                                             foreach ($st_fields as $i_field_name=>$st_field_values) {
                                                 $st_data[$i_data_counter][$st_field_values['name']] = ltrim(substr($st_output[$i_loop], $st_field_values['pos'], $st_field_values['length']));
                                             }
+                                            $i_data_counter++;
 
                                         }
 
