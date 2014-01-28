@@ -4,10 +4,10 @@
  * Creator:      Carles Mateo
  * Date Created: 2013-02-17 23:46
  * Last Updater: Carles Mateo
- * Last Updated: 2014-01-26 20:03
+ * Last Updated: 2014-01-28 16:25
  * Filename:     db.class.php
  * Description:  Handles interactions with the Databases
- * Version:      1.2.3
+ * Version:      1.2.4
  */
 
 namespace CataloniaFramework;
@@ -45,6 +45,8 @@ class Db
 
     // Used for Cassandra cqlsh
     public $s_path_to_cqlsh   = '/usr/bin/cqlsh';
+
+    public $b_use_database_or_keyspace = true;
 
     private $o_connection_read  = null;
     private $o_connection_write = null;
@@ -228,7 +230,7 @@ class Db
                 $s_error = 'Unable to set charset';
                 throw new DatabaseUnableToSetCharset('Unable to set charset: '.$s_connection_client_encoding);
             }
-            if (!@mysql_select_db($s_server_database, $o_connection)) {
+            if ($this->getUseDatabaseOrKeyspace() == true && !@mysql_select_db($s_server_database, $o_connection)) {
                 $s_error = 'Unable to select database';
                 //die( "Unable to select database");
                 throw new DatabaseUnableToSelectDb('Unable to select database: '.$s_server_database);
@@ -242,7 +244,7 @@ class Db
                 $s_error = 'Unable to set charset';
                 throw new DatabaseUnableToSetCharset('Unable to set charset: '.$s_connection_client_encoding);
             }
-            if (!@mysqli_select_db($o_connection, $s_server_database)) {
+            if ($this->getUseDatabaseOrKeyspace() == true && !@mysqli_select_db($o_connection, $s_server_database)) {
                 $s_error = 'Unable to select database';
                 //die( "Unable to select database");
                 throw new DatabaseUnableToSelectDb('Unable to select database: '.$s_server_database);
@@ -283,17 +285,17 @@ class Db
         $i_num = 0;
 
         $st_result = Array('result' => Array(   'status'                    => self::QUERY_RESULT_STATUS_NOT_EXECUTED,
-            'error'                     => 0,
-            'error_description'         => 'Not executed yet',
-            'numrows'                   => 0,
-            'insert_id'                 => null,
-            'query'                     => $s_sql,
-            'query_type'                => $s_query_type,
-            'query_for_driver'          => $s_type_connection,
-            'profiler_request_start'    => Datetime::getDateTime(Datetime::FORMAT_MICROTIME),
-            'profiler_request_end'      => 0),
-            'data'  => Array()
-        );
+                                                'error'                     => 0,
+                                                'error_description'         => 'Not executed yet',
+                                                'numrows'                   => 0,
+                                                'insert_id'                 => null,
+                                                'query'                     => $s_sql,
+                                                'query_type'                => $s_query_type,
+                                                'query_for_driver'          => $s_type_connection,
+                                                'profiler_request_start'    => Datetime::getDateTime(Datetime::FORMAT_MICROTIME),
+                                                'profiler_request_end'      => 0),
+                            'data'  => Array()
+                           );
 
         $i_result_numrows = 0;
         $i_result_status  = self::QUERY_RESULT_STATUS_NOT_EXECUTED;
@@ -381,7 +383,7 @@ class Db
                     $s_keyspace = $this->s_server_database_read;
 
                     $s_cql = '';
-                    if ($s_query_type == self::QUERY_TYPE_READ || $s_query_type == self::QUERY_TYPE_WRITE) {
+                    if ($this->getUseDatabaseOrKeyspace() == true && ($s_query_type == self::QUERY_TYPE_READ || $s_query_type == self::QUERY_TYPE_WRITE)) {
                         // May be later we will support QUERY_TYPE_ADMIN for maintenance
                         $s_cql = "USE $s_keyspace;\n";
                     }
@@ -475,8 +477,6 @@ class Db
 //
                                             }
                                         }
-                                        //echo 'Fields:';
-                                        //print_r($st_fields);
 
                                         $i_data_counter = 0;
                                         for ($i_loop = 3; $i_loop < (3 + $i_output_num_results); $i_loop++) {
@@ -486,9 +486,6 @@ class Db
                                             $i_data_counter++;
 
                                         }
-
-                                        //echo 'Data:';
-                                        //print_r($st_data);
 
                                         $st_result['data'] = $st_data;
                                     }
@@ -500,23 +497,17 @@ class Db
 
                             } else {
                                 // Write
-                                if (isset($st_output[0])) {
+                                if (isset($st_output[0]) && $st_output[0] != '') {
                                     // Error
                                     $i_result_error++;
                                     $s_result_error_description .= $st_output[0];
-                                    //echo 'Error: '.$st_output[0];
-                                    //print_r($st_output);
                                 }
                             }
-                            //echo $s_output; echo '</pre>';
 
                         } else {
                             $i_result_error++;
                             $s_result_error_description .= 'CQLSi Error executing call.';
                         }
-
-                        //print_r($st_output); exit();
-                        //$i_num = pg_num_rows($o_result);
 
                     } else {
                         //throw Exception('CQLSi Error');
@@ -527,6 +518,7 @@ class Db
                 }
 
                 $i_pointer=0;
+
                 if ($i_num>0) {
                     while ($i_pointer<$i_num && $s_type_connection != self::TYPE_CONNECTION_CASSANDRA_CQLSI)
                     {
@@ -584,9 +576,21 @@ class Db
         return $st_result;
     }
 
+    public function getCqlshPat() {
+        return $this->s_path_to_cqlsh;
+    }
+
     public function setCqlshPath($s_path) {
         // Provide it with an ending /
         $this->s_path_to_cqlsh = $s_path;
+    }
+
+    public function getUseDatabaseOrKeyspace() {
+        return $this->b_use_database_or_keyspace;
+    }
+
+    public function setUseDatabaseOrKeyspace($b_use = true) {
+        $this->b_use_database_or_keyspace = $b_use;
     }
 
     /*

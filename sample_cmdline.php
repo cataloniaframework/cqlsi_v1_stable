@@ -78,15 +78,21 @@ if ($st_results['result']['error'] > 0) {
     }
 
     if ($b_catalonia_keyspace_found == false) {
-        echo "Catalonia-Sample keyspace not found, creating it...\n";
+        echo "cataloniasample keyspace not found, creating it...\n";
 
         $s_cql = "CREATE KEYSPACE cataloniasample
                   WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};";
 
+        // This is for doing admin queries without selecting a keyscape
+        $o_db->setUseDatabaseOrKeyspace(false);
         $st_results = $o_db->queryWrite($s_cql);
+
+        // Future queries will use the keyspace
+        $o_db->setUseDatabaseOrKeyspace(true);
 
         if ($st_results['result']['error'] > 0) {
             echo 'The query: '.$st_results['result']['query'].' returned error: '.$st_results['result']['error_description']."\n";
+            print_r($st_results);
         } else {
             echo 'Keyspace cataloniasample created successfully!'."\n";
         }
