@@ -4,7 +4,7 @@
  * Creator:      Carles Mateo
  * Date Created: 2013-02-17 23:46
  * Last Updater: Carles Mateo
- * Last Updated: 2014-01-28 16:25
+ * Last Updated: 2014-01-28 18:30
  * Filename:     db.class.php
  * Description:  Handles interactions with the Databases
  * Version:      1.2.4
@@ -47,6 +47,7 @@ class Db
     public $s_path_to_cqlsh   = '/usr/bin/cqlsh';
 
     public $b_use_database_or_keyspace = true;
+    public $b_keep_cql_files = false;
 
     private $o_connection_read  = null;
     private $o_connection_write = null;
@@ -515,6 +516,12 @@ class Db
                         $s_result_error_description .= 'CQLSi Error.';
                     }
 
+                    // Delete files
+                    if ($this->getKeepCqlFiles() == false) {
+                        File::deleteFile($s_file_name_cqlsi);
+                        File::deleteFile($s_file_name_cqlsi_output);
+                        File::deleteFile($s_file_name_bash);
+                    }
                 }
 
                 $i_pointer=0;
@@ -591,6 +598,33 @@ class Db
 
     public function setUseDatabaseOrKeyspace($b_use = true) {
         $this->b_use_database_or_keyspace = $b_use;
+    }
+
+    public function setKeepCqlFiles($b_keep) {
+        $this->b_keep_cql_files = $b_keep;
+    }
+
+    public function getKeepCqlFiles() {
+        return $this->b_keep_cql_files;
+    }
+
+    public function setDatabaseOrKeyspace($s_database_or_keyspace, $s_connection_type) {
+        if ($s_connection_type == Db::CONNECTION_READ) {
+            $this->s_server_database_read = $s_database_or_keyspace;
+        }
+
+        if ($s_connection_type == Db::CONNECTION_WRITE) {
+            $this->s_server_database_write = $s_database_or_keyspace;
+        }
+    }
+
+    public function getDatabaseOrKeyspace($s_connection_type = Db::CONNECTION_READ) {
+        if ($s_connection_type == Db::CONNECTION_READ) {
+            return $this->s_server_database_read;
+        }
+        if ($s_connection_type == Db::CONNECTION_WRITE) {
+            return $this->s_server_database_write;
+        }
     }
 
     /*

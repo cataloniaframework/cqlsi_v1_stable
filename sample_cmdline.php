@@ -97,4 +97,73 @@ if ($st_results['result']['error'] > 0) {
             echo 'Keyspace cataloniasample created successfully!'."\n";
         }
     }
+
+    // Switch to use the cataloniasample keyspace
+    $o_db->setDatabaseOrKeyspace('cataloniasample', Db::CONNECTION_READ);
+    $o_db->setDatabaseOrKeyspace('cataloniasample', Db::CONNECTION_WRITE);
+
+    $s_cql = 'CREATE TABLE cataloniasampletable (id uuid,
+                                                 unix_datetime int,
+                                                 name text,
+                                                 description text,
+               PRIMARY KEY  (id) );';
+
+    $st_results = $o_db->queryWrite($s_cql);
+    if ($st_results['result']['error'] > 0) {
+        echo 'The query: '.$st_results['result']['query'].' returned error: '.$st_results['result']['error_description']."\n";
+        print_r($st_results);
+    } else {
+        echo 'Table cataloniasampletable created successfully!'."\n";
+    }
+
+    // Simple insert
+    $s_uuid = \CataloniaFramework\Security::getUUIDV4();
+    $s_unix_datetime = \CataloniaFramework\Datetime::getDateTime(\CataloniaFramework\Datetime::FORMAT_UNIXTIME);
+
+    $s_cql = "INSERT INTO
+                            cataloniasampletable
+                            (id, unix_datetime, name, description)
+                   VALUES
+                            ($s_uuid, $s_unix_datetime, 'Carles', 'Sample input');";
+
+    $st_results = $o_db->queryWrite($s_cql);
+    if ($st_results['result']['error'] > 0) {
+        echo 'The query: '.$st_results['result']['query'].' returned error: '.$st_results['result']['error_description']."\n";
+    } else {
+        echo 'Row inserted!'."\n";
+    }
+
+    // Do 20 INSERTS
+    $s_cql = '';
+    for ($i_loop=0; $i_loop<20; $i_loop++) {
+        $s_uuid = \CataloniaFramework\Security::getUUIDV4();
+        $s_unix_datetime = \CataloniaFramework\Datetime::getDateTime(\CataloniaFramework\Datetime::FORMAT_UNIXTIME);
+
+        $s_cql .= "INSERT INTO
+                                cataloniasampletable
+                                (id, unix_datetime, name, description)
+                       VALUES
+                                ($s_uuid, $s_unix_datetime, 'Carles', 'Sample input at loop $i_loop');";
+
+    }
+    // Process at once
+    $st_results = $o_db->queryWrite($s_cql);
+    if ($st_results['result']['error'] > 0) {
+        echo 'The query: '.$st_results['result']['query'].' returned error: '.$st_results['result']['error_description']."\n";
+    } else {
+        echo 'Rows inserted!'."\n";
+    }
+
+    // Show 10 results
+    $s_cql = 'SELECT * FROM cataloniasampletable LIMIT 10;';
+
+    $st_results = $o_db->queryRead($s_cql);
+
+    if ($st_results['result']['error'] > 0) {
+        echo 'The query: '.$st_results['result']['query'].' returned error: '.$st_results['result']['error_description']."\n";
+    } else {
+        echo 'The query: '.$st_results['result']['query'].' returned data: '."\n";
+        print_r($st_results['data']);
+
+    }
 }
