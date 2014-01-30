@@ -22,10 +22,10 @@ define('LOG_SQL_TO_FILE', false);
 $st_db_config = Array(	'read'  => Array(   'servers'   => Array(0 => Array('connection_type'   => Db::TYPE_CONNECTION_CASSANDRA_CQLSI,
                                                                             'connection_method' => Db::CONNECTION_METHOD_TCPIP,
                                                                             'server_hostname'   => '127.0.0.1',
-                                                                            'server_port'		=> Db::PORT_DEFAULT_CASSANDRA,
-                                                                            'username'			=> 'www_cassandra',
-                                                                            'password'			=> 'passCassandra',
-                                                                            'database'			=> 'cataloniafw',
+                                                                            'server_port'       => Db::PORT_DEFAULT_CASSANDRA,
+                                                                            'username'          => 'www_cassandra',
+                                                                            'password'          => 'passCassandra',
+                                                                            'database'          => 'cataloniafw',
                                                                             'client_encoding'   => 'utf8'
                                                                             )
                                                                 )
@@ -33,17 +33,15 @@ $st_db_config = Array(	'read'  => Array(   'servers'   => Array(0 => Array('conn
                         'write' => Array(   'servers'   => Array(0 => Array('connection_type'   => Db::TYPE_CONNECTION_CASSANDRA_CQLSI,
                                                                             'connection_method' => Db::CONNECTION_METHOD_TCPIP,
                                                                             'server_hostname'   => '127.0.0.1',
-                                                                            'server_port'		=> Db::PORT_DEFAULT_CASSANDRA,
-                                                                            'username'			=> 'www_cassandra',
-                                                                            'password'			=> 'passCassandra',
-                                                                            'database'			=> 'cataloniafw',
+                                                                            'server_port'       => Db::PORT_DEFAULT_CASSANDRA,
+                                                                            'username'          => 'www_cassandra',
+                                                                            'password'          => 'passCassandra',
+                                                                            'database'          => 'cataloniafw',
                                                                             'client_encoding'   => 'utf8'
                                                                             )
                                                                 )
 
                                         )
-
-
                     );
 
 // select * from system.schema_keyspaces;
